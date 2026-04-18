@@ -1,4 +1,4 @@
-"""Analyze skill demand by role using the SkillenAI API.
+"""Analyze skill demand by role using the Skillenai API.
 
 Query the skills-by-role endpoint for one or more roles, display top skills,
 and optionally compare skill profiles across roles.
@@ -130,7 +130,7 @@ def compare_roles(roles_data: list[dict], top_n: int = 15) -> None:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Analyze skill demand by role via the SkillenAI API")
+        description="Analyze skill demand by role via the Skillenai API")
     parser.add_argument(
         "roles", nargs="+",
         help="Role name(s) to analyze. Use commas within a single arg "

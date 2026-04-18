@@ -1,4 +1,4 @@
-# Getting Started with the SkillenAI API
+# Getting Started with the Skillenai API
 
 This guide walks you through registering for the API, creating a key, and making your first request.
 
@@ -8,7 +8,7 @@ Go to [app.skillenai.com](https://app.skillenai.com) and create an account. You'
 
 ## Step 2: Verify Your Email
 
-Check your inbox for a verification email from SkillenAI. Click the verification link to activate your account. If you don't see it, check your spam folder.
+Check your inbox for a verification email from Skillenai. Click the verification link to activate your account. If you don't see it, check your spam folder.
 
 ## Step 3: Create an API Key
 
