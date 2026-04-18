@@ -1,4 +1,4 @@
-"""Analyze topic trends from the SkillenAI API.
+"""Analyze topic trends from the Skillenai API.
 
 Query the topic-trends endpoint, display time series data, and identify
 rising and declining topics.
@@ -153,7 +153,7 @@ def analyze_trends(trends: list[dict],
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Analyze topic trends from the SkillenAI API")
+        description="Analyze topic trends from the Skillenai API")
     parser.add_argument(
         "--topic", action="append", default=None,
         help="Filter to specific topic(s) — can be repeated. "

@@ -1,4 +1,4 @@
-"""Search for jobs using the SkillenAI API with multi-signal ranking.
+"""Search for jobs using the Skillenai API with multi-signal ranking.
 
 Supports text queries, skill boosts, seniority filtering, salary thresholds,
 geographic proximity, and recency decay.
@@ -132,7 +132,7 @@ def print_results(results: dict, verbose: bool = False) -> None:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Search for jobs via the SkillenAI API")
+        description="Search for jobs via the Skillenai API")
     parser.add_argument(
         "query",
         help="Search query text")

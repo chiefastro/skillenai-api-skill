@@ -1,6 +1,6 @@
 # Catalog Endpoints
 
-Schema introspection for the SkillenAI data platform. Use these endpoints to discover available tables, columns, and projections before writing queries.
+Schema introspection for the Skillenai data platform. Use these endpoints to discover available tables, columns, and projections before writing queries.
 
 ## GET /v1/catalog
 

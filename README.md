@@ -1,10 +1,10 @@
-# SkillenAI API Skill
+# Skillenai API Skill
 
-A Claude Code skill and Python toolkit for the [SkillenAI Data Products API](https://api.skillenai.com) — labor market intelligence covering skills, jobs, trends, and entity analytics across the AI/ML ecosystem.
+A Claude Code skill and Python toolkit for the [Skillenai Data Products API](https://api.skillenai.com) — labor market intelligence covering skills, jobs, trends, and entity analytics across the AI/ML ecosystem.
 
-## What SkillenAI Provides
+## What Skillenai Provides
 
-SkillenAI indexes and enriches content from across the AI/ML landscape — job postings, blog posts, research papers, news, and social media — then extracts entities, resolves them to a canonical knowledge graph, and exposes the results through a structured API.
+Skillenai indexes and enriches content from across the AI/ML landscape — job postings, blog posts, research papers, news, and social media — then extracts entities, resolves them to a canonical knowledge graph, and exposes the results through a structured API.
 
 ## Key Capabilities
 
@@ -29,7 +29,7 @@ See [docs/getting-started.md](docs/getting-started.md) for the full walkthrough.
 
 ## Use with Claude Code
 
-Add this repo as a Claude Code skill so your agent can query the SkillenAI API directly.
+Add this repo as a Claude Code skill so your agent can query the Skillenai API directly.
 
 ### Option 1: Install as a project skill
 

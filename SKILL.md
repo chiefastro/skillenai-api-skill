@@ -1,14 +1,14 @@
 ---
 name: skillenai-api
-description: Query the SkillenAI Data Products API for labor market intelligence — skills, jobs, trends, and entity analytics
+description: Query the Skillenai Data Products API for labor market intelligence — skills, jobs, trends, and entity analytics
 user-invocable: true
 argument-hint: [query|jobs|skills|trends|eda|report] <details>
 allowed-tools: Bash, Read, Write, Glob, Grep, Agent
 ---
 
-# SkillenAI Data Products API Skill
+# Skillenai Data Products API Skill
 
-This skill queries the SkillenAI Data Products API for labor market intelligence. It covers skills, jobs, trends, entity analytics, and knowledge graph traversal.
+This skill queries the Skillenai Data Products API for labor market intelligence. It covers skills, jobs, trends, entity analytics, and knowledge graph traversal.
 
 ## API Surface
 

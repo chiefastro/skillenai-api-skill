@@ -1,4 +1,4 @@
-"""Generate a comprehensive EDA report from the SkillenAI Data Products API.
+"""Generate a comprehensive EDA report from the Skillenai Data Products API.
 
 Queries all major endpoints and produces a markdown report with insights
 about dataset composition, topic trends, entity co-occurrence, and more.
@@ -160,12 +160,12 @@ def generate_report(data: dict) -> str:
     now_str = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     version_info = data.get("version", {})
 
-    lines.append("# SkillenAI Data Products -- Exploratory Data Analysis")
+    lines.append("# Skillenai Data Products -- Exploratory Data Analysis")
     lines.append("")
     lines.append(f"**Generated:** {now_str}  ")
     lines.append(f"**API Version:** {version_info.get('service', '?')} "
                  f"{version_info.get('version', '?')}  ")
-    lines.append("**Data source:** SkillenAI Data Products API")
+    lines.append("**Data source:** Skillenai Data Products API")
     lines.append("")
 
     # --- Section 1: Dataset Overview ---
@@ -383,7 +383,7 @@ def generate_report(data: dict) -> str:
     lines.append("---")
     lines.append("")
     lines.append("*This report was generated programmatically using only the "
-                 "SkillenAI Data Products API. No direct database access was "
+                 "Skillenai Data Products API. No direct database access was "
                  "required. Reproduce and extend this analysis using the same "
                  "public API.*")
     lines.append("")
@@ -393,7 +393,7 @@ def generate_report(data: dict) -> str:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate an EDA report from the SkillenAI API")
+        description="Generate an EDA report from the Skillenai API")
     parser.add_argument(
         "--output", "-o",
         default=None,

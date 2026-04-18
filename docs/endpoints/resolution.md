@@ -2,7 +2,7 @@
 
 ## POST /v1/resolution/entities
 
-Resolves free-text names to canonical entity IDs in the SkillenAI knowledge graph. Use this to find entity IDs for `skill_boosts` in job search, or to normalize variant spellings before analysis.
+Resolves free-text names to canonical entity IDs in the Skillenai knowledge graph. Use this to find entity IDs for `skill_boosts` in job search, or to normalize variant spellings before analysis.
 
 ### Request Body
 
