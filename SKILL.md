@@ -12,7 +12,12 @@ This skill queries the Skillenai Data Products API for labor market intelligence
 
 ## API Surface
 
-The API has six endpoint groups:
+Two hosts, one API key:
+
+- **`https://api.skillenai.com`** — read-only data products (search, analytics, SQL, graph, resolution).
+- **`https://app.skillenai.com`** — user-facing account surface. Alerts CRUD lives here; the scheduled queries it runs hit `api.skillenai.com` with the same key.
+
+The data products API has six endpoint groups:
 
 | Group | Key Endpoints | Purpose |
 |-------|-----------|---------|
@@ -23,14 +28,23 @@ The API has six endpoint groups:
 | Catalog | `GET /v1/catalog`, `GET /v1/catalog/{projection}` | Schema introspection |
 | Query | `POST /v1/query/sql`, `athena`, `graph`, `search` | Direct query against 4 data projections |
 
+`app.skillenai.com` adds one more group (see Flow 10):
+
+| Group | Key Endpoints | Host | Purpose |
+|-------|-----------|------|---------|
+| Alerts | `POST /alerts/preview`, `POST /alerts`, `GET /alerts`, `POST /alerts/{id}/run`, `PATCH /alerts/{id}`, `DELETE /alerts/{id}` | `app.skillenai.com` | Create and manage scheduled email alerts that run any data products query on a cadence |
+
 ## Credentials
 
 Store your API key in a `.env` file at the project root:
 
 ```
 API_URL=https://api.skillenai.com
+APP_URL=https://app.skillenai.com
 API_KEY=skn_live_your_key_here
 ```
+
+The same `API_KEY` authenticates both hosts — it's a Skillenai API key generated on the API Keys page of `app.skillenai.com`. The alerts flow (Flow 10) calls `$APP_URL`; every other flow calls `$API_URL`.
 
 Copy `.env.example` and fill in your key. Get an API key by registering at [app.skillenai.com](https://app.skillenai.com).
 
@@ -78,6 +92,7 @@ Parse the user's intent from `$ARGUMENTS`:
 - `skills <query>` or any question about job skills/roles → **Flow 7 (skills-by-role)**
 - `jobs <query>` → Job search (Flow 8)
 - `graph <cypher>` → Raw graph traversal (Flow 6 — only when skills-by-role doesn't cover the need)
+- `alerts <anything>`, `subscribe <query>`, or "email me when X" → Alerts authoring (Flow 10)
 - If unclear, ask the user what they want to explore
 
 ---
@@ -353,26 +368,110 @@ Use this to resolve skill names to entity IDs for `skill_boosts` in `/v1/jobs/se
 
 ---
 
+## Flow 10: Alerts (`alerts` / "email me when …")
+
+User alert subscriptions run a saved Data Products query on a cadence and email the results. CRUD lives on **`app.skillenai.com`**, not the data products API — but the same `X-API-Key` authenticates both. Full endpoint reference in `docs/endpoints/alerts.md`.
+
+The agent flow is **preview → create → (optional) run now**. Iterate on the preview until the credit cost and subject line look right, then commit.
+
+### Step 1: Preview the query
+
+```bash
+source .env
+
+curl -s -X POST -H "X-API-Key: $API_KEY" -H "Content-Type: application/json" \
+  "$APP_URL/alerts/preview" \
+  -d '{
+    "name": "Senior ML jobs",
+    "source_query": {
+      "endpoint": "/v1/jobs/search",
+      "payload": {"query": "machine learning engineer", "seniority": "senior", "size": 10}
+    },
+    "delivery_config": {"channel": "email", "target": "alerts@example.com"}
+  }' | python3 -m json.tool
+```
+
+The response returns `item_count`, the `rendered.subject` the recipient will see, and a `credits` block. Inspect all three before creating the alert:
+
+- If `item_count == 0`, the query is too narrow — broaden the `payload`.
+- If `rendered.subject` reads awkwardly, tweak `name` — the default subject is `"Skillenai alert: N new results for <name>"`.
+- `credits.used` is the cost of ONE run. **Multiply by cadence to estimate monthly burn** (`used × runs_per_day × 30`). A 17-credit query running hourly costs ~12,240 credits/month.
+
+### Step 2: Create the alert
+
+```bash
+curl -s -X POST -H "X-API-Key: $API_KEY" -H "Content-Type: application/json" \
+  "$APP_URL/alerts" \
+  -d '{
+    "name": "Senior ML jobs",
+    "source_query": {
+      "endpoint": "/v1/jobs/search",
+      "payload": {"query": "machine learning engineer", "seniority": "senior", "size": 10}
+    },
+    "delivery_config": {"channel": "email", "target": "alerts@example.com"},
+    "schedule_cadence_seconds": 86400
+  }' | python3 -m json.tool
+```
+
+Returns 201 with an `AlertInfo` row (id, next_run_at, etc.). **Always pass `name`** so the email subject is human-readable. `schedule_cadence_seconds` is the interval between runs.
+
+### Step 3: (Optional) Trigger a run now
+
+```bash
+ALERT_ID="<id from step 2>"
+curl -s -X POST -H "X-API-Key: $API_KEY" "$APP_URL/alerts/$ALERT_ID/run"
+```
+
+The run is asynchronous. Poll `GET /alerts/$ALERT_ID` until `last_run_at` advances (typically 30–60s).
+
+### Step 4: Manage
+
+```bash
+# List
+curl -s -H "X-API-Key: $API_KEY" "$APP_URL/alerts"
+
+# Read one
+curl -s -H "X-API-Key: $API_KEY" "$APP_URL/alerts/$ALERT_ID"
+
+# Partial update — pause, rename, change cadence, etc.
+curl -s -X PATCH -H "X-API-Key: $API_KEY" -H "Content-Type: application/json" \
+  "$APP_URL/alerts/$ALERT_ID" -d '{"is_active": false}'
+
+# Delete (204)
+curl -s -X DELETE -H "X-API-Key: $API_KEY" "$APP_URL/alerts/$ALERT_ID"
+```
+
+**Source query scope:** any Data Products API endpoint the caller's key can hit is fair game for `source_query.endpoint`. The scheduled run authorises and bills against that key exactly like a direct call would.
+
+**Channels:** only `email` is supported today. Additional channels will be added as separate `delivery_config.channel` values.
+
+---
+
 ## API Reference Quick Summary
 
 ### Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/v1/health` | GET | Service health |
-| `/v1/version` | GET | Service metadata |
-| `/v1/analytics/counts` | GET | Document counts by source |
-| `/v1/analytics/entity-cooccurrence` | GET | Top entity pairs |
-| `/v1/analytics/topic-trends` | GET | Monthly topic trends |
-| `/v1/analytics/skills-by-role` | GET | **Skill distributions by role (entity-resolved, comma-separated aliases)** |
-| `/v1/jobs/search` | POST | **Multi-signal job search (RRF + boosts + seniority + geo + recency)** |
-| `/v1/resolution/entities` | POST | **Resolve names to entity IDs** |
-| `/v1/catalog` | GET | List all projection schemas |
-| `/v1/catalog/{projection}` | GET | Schema for one projection |
-| `/v1/query/sql` | POST | SQL against Postgres |
-| `/v1/query/athena` | POST | SQL against Athena/S3 |
-| `/v1/query/graph` | POST | Cypher against knowledge graph |
-| `/v1/query/search` | POST | OpenSearch Query DSL |
+| Endpoint | Method | Host | Description |
+|----------|--------|------|-------------|
+| `/v1/health` | GET | api | Service health |
+| `/v1/version` | GET | api | Service metadata |
+| `/v1/analytics/counts` | GET | api | Document counts by source |
+| `/v1/analytics/entity-cooccurrence` | GET | api | Top entity pairs |
+| `/v1/analytics/topic-trends` | GET | api | Monthly topic trends |
+| `/v1/analytics/skills-by-role` | GET | api | **Skill distributions by role (entity-resolved, comma-separated aliases)** |
+| `/v1/jobs/search` | POST | api | **Multi-signal job search (RRF + boosts + seniority + geo + recency)** |
+| `/v1/resolution/entities` | POST | api | **Resolve names to entity IDs** |
+| `/v1/catalog` | GET | api | List all projection schemas |
+| `/v1/catalog/{projection}` | GET | api | Schema for one projection |
+| `/v1/query/sql` | POST | api | SQL against Postgres |
+| `/v1/query/athena` | POST | api | SQL against Athena/S3 |
+| `/v1/query/graph` | POST | api | Cypher against knowledge graph |
+| `/v1/query/search` | POST | api | OpenSearch Query DSL |
+| `/alerts/preview` | POST | app | **Dry-run an alert query; see item_count, rendered email, and credit cost** |
+| `/alerts` | POST | app | Create a scheduled alert |
+| `/alerts` | GET | app | List the caller's alerts |
+| `/alerts/{id}` | GET/PATCH/DELETE | app | Read/update/delete one alert |
+| `/alerts/{id}/run` | POST | app | Trigger an ad-hoc run |
 
 ### Entity types: `company`, `product`, `person`, `skill`, `location`
 ### Source types: `blog`, `news`, `scholarly`, `social`, `jobs`, `product`, `company`, `person`
@@ -390,11 +489,11 @@ The `scripts/` directory contains Python helpers that load credentials from `.en
 | `scripts/trend_analysis.py` | Topic trend time series, growth analysis |
 | `scripts/job_search.py` | Multi-signal job search with formatted output |
 | `scripts/download_jobs_paginated.py` | Paginated per-job download with arbitrary filter segments; handles 429 backoff |
-| `scripts/canonicalize_skills.py` | Collapse duplicate skill surface forms (case/punct/acronym variants) before aggregating — see SKI-165 |
+| `scripts/canonicalize_skills.py` | Collapse duplicate skill surface forms (case/punct/acronym variants) before aggregating |
 
 Run any script with `--help` for usage details.
 
-**Before aggregating skills by anything** (role, geo, seniority, time), pass per-job data through `canonicalize_skills.py` first. The entity resolver emits duplicate canonical names for skills like `RAG` vs `Retrieval-Augmented Generation (RAG)`, and aggregations will undercount or give contradictory signals otherwise. See SKI-165.
+**Before aggregating skills by anything** (role, geo, seniority, time), pass per-job data through `canonicalize_skills.py` first. The entity resolver emits duplicate canonical names for skills like `RAG` vs `Retrieval-Augmented Generation (RAG)`, and aggregations will undercount or give contradictory signals otherwise.
 
 ---
 
