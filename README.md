@@ -29,35 +29,51 @@ See [docs/getting-started.md](docs/getting-started.md) for the full walkthrough.
 
 ## Use with Claude Code
 
-Add this repo as a Claude Code skill so your agent can query the Skillenai API directly.
+This repo is packaged as a Claude Code plugin. The recommended install is through the plugin marketplace:
 
-### Option 1: Install as a project skill
+```
+/plugin marketplace add chiefastro/skillenai-api-skill
+/plugin install skillenai
+```
+
+Restart Claude Code (or `/reload-plugins`). The skill registers as **`/skillenai:api`** — note the colon, which is standard namespacing for plugin skills.
+
+### Credentials
+
+Save your API key once at `~/.skillenai/.env` (survives plugin upgrades):
 
 ```bash
-# Clone the repo
-git clone https://github.com/chiefastro/skillenai-api-skill.git
-
-# Add your credentials
-cp skillenai-api-skill/.env.example skillenai-api-skill/.env
-# Edit .env with your API key
-
-# In your project's .claude/settings.json, add:
-# { "permissions": { "allow": ["skill:skillenai-api-skill/SKILL.md"] } }
+mkdir -p ~/.skillenai
+printf 'API_KEY=skn_live_your_key_here\n' > ~/.skillenai/.env
+chmod 600 ~/.skillenai/.env
 ```
 
-### Option 2: Reference directly
+Or export it in your shell profile: `export API_KEY=skn_live_...`. Both the skill and the Python helper scripts resolve credentials with the same precedence: shell env → `~/.skillenai/.env` → plugin-local `.env` → cwd `.env`.
 
-Point Claude Code at the skill file:
+Get an API key by registering at [app.skillenai.com](https://app.skillenai.com).
 
-```
-/skill path/to/skillenai-api-skill/SKILL.md
-```
+### Asking questions
 
-Then ask things like:
+Once installed, try things like:
 - "What skills do Data Scientists need?"
 - "Search for remote ML engineer jobs paying over $200k"
 - "Show me topic trends for the last 6 months"
 - "Run a full EDA report"
+
+### Alternative: clone directly as a directory skill
+
+If you prefer not to use the plugin system, you can register the skill manually by cloning the inner `skills/api/` directory into a skills folder Claude Code scans:
+
+```bash
+git clone https://github.com/chiefastro/skillenai-api-skill.git
+ln -s "$(pwd)/skillenai-api-skill/skills/api" ~/.claude/skills/skillenai-api
+```
+
+Invocation in that layout is `/skillenai-api` (bare — directory skills aren't namespaced). The same `~/.skillenai/.env` credentials work.
+
+### Alternative: use the repo standalone
+
+Everything in this repo — [skills/api/SKILL.md](skills/api/SKILL.md), [scripts/](scripts/), and [docs/](docs/) — is just files. Clone it anywhere and point your own agent at the SKILL.md or run the Python scripts directly with `python scripts/eda_report.py` etc.
 
 ## Helper Scripts
 
