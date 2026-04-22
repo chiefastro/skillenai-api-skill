@@ -94,6 +94,9 @@ Execute Cypher queries against the Apache AGE knowledge graph.
 - **Read-only:** Only `MATCH` and `RETURN` clauses are allowed
 - **Max 1,000 rows** per query
 - **30-second timeout** per query
+- **Max 3 hops** in variable-length paths. Use `[*..3]` or fewer; `[*..4]` is rejected.
+- **Max 2 comma-separated patterns** in a MATCH. A cartesian-product query with three patterns (e.g. `MATCH (a), (b)-[:R]->(c), (d)`) is rejected. Rewrite with chained relationship patterns instead — e.g. `MATCH (a)<-[:MENTIONS]-(d)-[:MENTIONS]->(b)` rather than `MATCH (a), (d), (b)`.
+- **Node-property exposure is minimal:** `document` nodes only expose `id` and `name` via graph. If you need `source_type`, `title`, `published_at` for matched documents, join back to `skillenai.documents` in the Postgres projection via the document ID.
 
 ### Examples
 
@@ -114,6 +117,21 @@ curl -s -X POST -H "X-API-Key: $API_KEY" -H "Content-Type: application/json" \
 curl -s -X POST -H "X-API-Key: $API_KEY" -H "Content-Type: application/json" \
   "$API_URL/v1/query/graph" \
   -d '{"cypher": "MATCH (d:document)-[:MENTIONS]->(e:skill) WHERE d.source_type = '\''scholarly'\'' RETURN e.name AS skill, count(*) AS mentions ORDER BY mentions DESC", "limit": 30}'
+
+# Bridge documents: how narratively entangled are two entities?
+curl -s -X POST -H "X-API-Key: $API_KEY" -H "Content-Type: application/json" \
+  "$API_URL/v1/query/graph" \
+  -d '{"cypher": "MATCH (a:product {id: '\''ID_A'\''})<-[:MENTIONS]-(d)-[:MENTIONS]->(b:company {id: '\''ID_B'\''}) RETURN count(DISTINCT d) AS bridge_docs"}'
+
+# Co-required products in job postings (complementary toolkit detection)
+curl -s -X POST -H "X-API-Key: $API_KEY" -H "Content-Type: application/json" \
+  "$API_URL/v1/query/graph" \
+  -d '{"cypher": "MATCH (a:product {id: '\''ID_A'\''})<-[:MENTIONS]-(j:job)-[:MENTIONS]->(b:product {id: '\''ID_B'\''}) RETURN count(j) AS co_required_jobs"}'
+
+# Internal hiring stack for a company (product-eng depth signal)
+curl -s -X POST -H "X-API-Key: $API_KEY" -H "Content-Type: application/json" \
+  "$API_URL/v1/query/graph" \
+  -d '{"cypher": "MATCH (j:job)-[:POSTED_BY]->(c:company {id: '\''ID'\''}), (j)-[:MENTIONS]->(p:product) RETURN p.name AS product, count(j) AS jobs ORDER BY jobs DESC", "limit": 20}'
 ```
 
 ### Node Labels and Properties

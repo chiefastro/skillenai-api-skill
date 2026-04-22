@@ -500,6 +500,7 @@ The `scripts/` directory (at `${CLAUDE_PLUGIN_ROOT}/scripts/`) contains Python h
 | `scripts/job_search.py` | Multi-signal job search with formatted output |
 | `scripts/download_jobs_paginated.py` | Paginated per-job download with arbitrary filter segments; handles 429 backoff |
 | `scripts/canonicalize_skills.py` | Collapse duplicate skill surface forms (case/punct/acronym variants) before aggregating |
+| `scripts/entity_bridge_analysis.py` | Graph-native helpers: bridge-document density, co-required products in jobs, internal hiring stacks, top co-occurring entities. Uses Cypher. |
 
 Run any script with `--help` for usage details.
 
