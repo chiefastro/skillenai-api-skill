@@ -383,6 +383,22 @@ User alert subscriptions run a saved Data Products query on a cadence and email 
 
 The agent flow is **preview → create → (optional) run now**. Iterate on the preview until the credit cost and subject line look right, then commit.
 
+### Step 0: Scope the alert with the user
+
+Before composing the `source_query`, gather scope the user may not have stated explicitly. Two pieces of scope produce noticeably worse alerts when skipped:
+
+- **Preferred language(s).** Enriched content spans many languages, so a topic-only query will happily return articles in any of them. Ask the user which languages they want (default to English if they don't care) and include a `terms` filter on `language` (ISO 639-1 codes, e.g. `en`, `de`, `es`) in the payload. Applies to `/v1/query/search`, `/v1/jobs/search`, and anything else hitting the enriched content indices.
+- **Recency field.** For content-recency filters ("articles from the last week", "new since yesterday"), filter on **`publishedAt`**, not `ingestedAt`. `publishedAt` is the source's publication date; `ingestedAt` is when Skillenai first saw the document — which can be much later, so `ingestedAt`-based filters surface old articles that were only recently crawled. Dedup of "new since last alert run" is handled separately by the alerts pipeline and does not need a query-level filter.
+
+Example filter block for `/v1/query/search`:
+
+```json
+"filter": [
+  {"range": {"publishedAt": {"gte": "now-1d"}}},
+  {"terms": {"language": ["en"]}}
+]
+```
+
 ### Step 1: Preview the query
 
 ```bash
