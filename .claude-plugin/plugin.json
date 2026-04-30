@@ -1,7 +1,7 @@
 {
   "name": "skillenai",
-  "version": "0.2.2",
-  "description": "Query the Skillenai Data Products API for labor market intelligence — skills, jobs, trends, and entity analytics",
+  "version": "0.3.0",
+  "description": "Skillenai Claude plugin — query the Data Products API, find jobs, and author blog posts using your Skillenai API key",
   "author": {
     "name": "Jared Rand",
     "url": "https://github.com/chiefastro"

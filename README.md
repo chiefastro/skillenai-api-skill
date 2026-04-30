@@ -41,7 +41,13 @@ This repo is packaged as a Claude Code plugin. The recommended install is throug
 /plugin install skillenai@skillenai-api
 ```
 
-Run these as two separate commands — Claude Code slash commands are one per line. Restart Claude Code (or `/reload-plugins`) after installing. The skill registers as **`/skillenai:api`** — note the colon, which is standard namespacing for plugin skills.
+Run these as two separate commands — Claude Code slash commands are one per line. Restart Claude Code (or `/reload-plugins`) after installing. The plugin registers three skills:
+
+- **`/skillenai:api`** — query the data products API (skills, jobs, trends, entity analytics)
+- **`/skillenai:job-finder`** — match a resume against the live job index
+- **`/skillenai:blog`** — author and manage Skillenai blog posts from inside Claude
+
+Note the colon — standard namespacing for plugin skills.
 
 ### Credentials
 
@@ -106,6 +112,7 @@ pip install requests python-dotenv
 | `scripts/skill_analysis.py` | Analyze skill demand by role, compare roles |
 | `scripts/trend_analysis.py` | Topic trend time series and growth analysis |
 | `scripts/job_search.py` | Multi-signal job search with formatted output |
+| `scripts/blog_upload.py` | Upload a cover image for a blog post (presign + PUT) |
 
 Run any script with `--help` for usage.
 
@@ -120,3 +127,4 @@ Run any script with `--help` for usage.
   - [Resolution](docs/endpoints/resolution.md) — Entity resolution (free-text to canonical)
   - [Catalog](docs/endpoints/catalog.md) — Schema introspection
   - [Query](docs/endpoints/query.md) — SQL, OpenSearch DSL, Cypher graph queries
+  - [Content](docs/endpoints/content.md) — Blog post authoring (used by the `/skillenai:blog` skill)
