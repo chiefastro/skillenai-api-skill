@@ -17,7 +17,7 @@ This skill queries the Skillenai Data Products API for labor market intelligence
 Two hosts, one API key:
 
 - **`https://api.skillenai.com`** — read-only data products (search, analytics, SQL, graph, resolution).
-- **`https://app.skillenai.com/api/backend`** — account surface (alerts CRUD); the scheduled queries it runs hit `api.skillenai.com` with the same key.
+- **`https://skillenai.com/api/backend`** — account surface (alerts CRUD); the scheduled queries it runs hit `api.skillenai.com` with the same key.
 
 The data products API has six endpoint groups:
 
@@ -34,7 +34,7 @@ The account surface adds one more group (see Flow 10):
 
 | Group | Key Endpoints | Host | Purpose |
 |-------|-----------|------|---------|
-| Alerts | `POST /alerts/preview`, `POST /alerts`, `GET /alerts`, `POST /alerts/{id}/run`, `PATCH /alerts/{id}`, `DELETE /alerts/{id}` | `app.skillenai.com/api/backend` | Create and manage scheduled email alerts that run any data products query on a cadence |
+| Alerts | `POST /alerts/preview`, `POST /alerts`, `GET /alerts`, `POST /alerts/{id}/run`, `PATCH /alerts/{id}`, `DELETE /alerts/{id}` | `skillenai.com/api/backend` | Create and manage scheduled email alerts that run any data products query on a cadence |
 
 ## Credentials
 
@@ -62,7 +62,7 @@ When `$ARGUMENTS` starts with `setup` (or is just `setup`):
 python "${CLAUDE_PLUGIN_ROOT}/scripts/oauth_setup.py"
 ```
 
-This opens a browser to `app.skillenai.com/activate`, the user clicks Allow, and the script writes the issued key to `~/.skillenai/.env` with mode 0600. On exit 0, suggest a next step (e.g. "Try `/skillenai:api jobs <query>` to test it."). On exit 1, surface the script's stderr — it is already sanitized and will not contain the key.
+This opens a browser to the Skillenai activation page, the user clicks Allow, and the script writes the issued key to `~/.skillenai/.env` with mode 0600. On exit 0, suggest a next step (e.g. "Try `/skillenai:api jobs <query>` to test it."). On exit 1, surface the script's stderr — it is already sanitized and will not contain the key.
 
 ### If the user pastes a key in chat
 
@@ -85,7 +85,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/api.py" POST /v1/query/sql \
   '{"sql": "SELECT count(*) AS n FROM skillenai.entities"}' | python3 -m json.tool
 ```
 
-Calls to the alerts host (`app.skillenai.com/api/backend`) take `--host app`:
+Calls to the alerts host (`skillenai.com/api/backend`) take `--host app`:
 
 ```bash
 python "${CLAUDE_PLUGIN_ROOT}/scripts/api.py" GET /alerts --host app | python3 -m json.tool
@@ -414,7 +414,7 @@ python "$TG" skill-prevalence --role "Data Scientist" --top 15
 
 ## Flow 10: Alerts (`alerts` / "email me when …")
 
-User alert subscriptions run a saved Data Products query on a cadence and email the results. CRUD lives at **`app.skillenai.com/api/backend`**, not the data products API — but the same `X-API-Key` authenticates both. Pass `--host app` to the wrapper. Full endpoint reference in `${CLAUDE_PLUGIN_ROOT}/docs/endpoints/alerts.md`.
+User alert subscriptions run a saved Data Products query on a cadence and email the results. CRUD lives at **`skillenai.com/api/backend`**, not the data products API — but the same `X-API-Key` authenticates both. Pass `--host app` to the wrapper. Full endpoint reference in `${CLAUDE_PLUGIN_ROOT}/docs/endpoints/alerts.md`.
 
 The agent flow is **preview → create → (optional) run now**. Iterate on the preview until the credit cost and subject line look right, then commit.
 
@@ -583,14 +583,14 @@ Run any script with `--help` for usage details.
 
 ## Security
 
-The API key is a long-lived credential. Once leaked, it is valid until the user notices and revokes it on `app.skillenai.com` → API Keys. The skill is structured so the agent **cannot** accidentally leak it — but agents fail in surprising ways, so these are explicit hard rules:
+The API key is a long-lived credential. Once leaked, it is valid until the user notices and revokes it on `skillenai.com` → API Keys. The skill is structured so the agent **cannot** accidentally leak it — but agents fail in surprising ways, so these are explicit hard rules:
 
 - **NEVER** print the contents of `~/.skillenai/.env`. No `cat`, `head`, `less`, `tail`, `tee`, `od`, `xxd`, or anything else that streams the file. The user can open it in their editor if they need to read it.
 - **NEVER** run `echo $API_KEY`, `env | grep -i api`, `printenv API_KEY`, `set | grep API`, or anything else that surfaces an env var named `API_KEY`. The wrapper script is the only place `API_KEY` should be loaded into a process; the agent's bash does not need it.
 - **NEVER** invoke `curl` directly with `-H "X-API-Key: …"`. Always go through `scripts/api.py`.
 - **NEVER** use `curl -v`, `curl --trace`, `curl --trace-ascii`, or any verbose/trace flag — these echo request headers including `X-API-Key`.
 - **NEVER** add `--debug`, `set -x`, `bash -x`, or shell tracing while a flow that touches credentials is running.
-- **If the user asks the agent to show them their key**, respond: "For security, I won't print your key. You can read `~/.skillenai/.env` yourself if you need it. To rotate, revoke the old key on app.skillenai.com → API Keys, then run `/skillenai:api setup` for a new one."
+- **If the user asks the agent to show them their key**, respond: "For security, I won't print your key. You can read `~/.skillenai/.env` yourself if you need it. To rotate, revoke the old key on skillenai.com → API Keys, then run `/skillenai:api setup` for a new one."
 - **If the user pastes a `skn_live_…` string into chat**, follow the "If the user pastes a key in chat" guidance above — point them at `setup`, do NOT save the pasted key on their behalf.
 
 ---

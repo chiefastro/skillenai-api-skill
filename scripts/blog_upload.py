@@ -34,7 +34,7 @@ import requests
 from dotenv import load_dotenv
 
 
-DEFAULT_APP_URL = "https://app.skillenai.com/api/backend"
+DEFAULT_APP_URL = "https://skillenai.com/api/backend"
 MAX_BYTES = 10 * 1024 * 1024  # backend caps at 10 MB
 ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 

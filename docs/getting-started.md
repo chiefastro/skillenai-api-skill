@@ -4,7 +4,7 @@ This guide walks you through registering for the API, creating a key, and making
 
 ## Step 1: Register
 
-Go to [app.skillenai.com](https://app.skillenai.com) and create an account. You'll need to provide an email address and set a password.
+Go to [skillenai.com](https://skillenai.com) and create an account. You'll need to provide an email address and set a password.
 
 ## Step 2: Verify Your Email
 
@@ -31,7 +31,7 @@ Edit `.env` and paste your API key:
 
 ```
 API_URL=https://api.skillenai.com
-APP_URL=https://app.skillenai.com/api/backend
+APP_URL=https://skillenai.com/api/backend
 API_KEY=skn_live_your_actual_key_here
 ```
 

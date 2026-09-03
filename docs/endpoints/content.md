@@ -1,14 +1,14 @@
 # Content Endpoints
 
-The Skillenai blog is served by content endpoints under `app.skillenai.com/api/backend/content`. The same `X-API-Key` that authenticates the data products API also authenticates these endpoints, so users can author and manage posts from inside Claude (via `/skillenai:blog`) without a separate login round-trip.
+The Skillenai blog is served by content endpoints under `skillenai.com/api/backend/content`. The same `X-API-Key` that authenticates the data products API also authenticates these endpoints, so users can author and manage posts from inside Claude (via `/skillenai:blog`) without a separate login round-trip.
 
 ## Host
 
 ```
-https://app.skillenai.com/api/backend
+https://skillenai.com/api/backend
 ```
 
-The data products API lives on `api.skillenai.com`; content CRUD lives on `app.skillenai.com/api/backend`. Same key, two hosts.
+The data products API lives on `api.skillenai.com`; content CRUD lives on `skillenai.com/api/backend`. Same key, two hosts.
 
 ## Authentication
 

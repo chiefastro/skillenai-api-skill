@@ -18,7 +18,7 @@ Security posture:
 Usage:
     python oauth_setup.py
     python oauth_setup.py --force      # overwrite existing credentials
-    python oauth_setup.py --app-url https://app.skillenai.com
+    python oauth_setup.py --app-url https://skillenai.com
 """
 
 from __future__ import annotations
@@ -37,7 +37,7 @@ import requests
 
 CLIENT_ID = "skillenai-api-skill"
 DEVICE_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:device_code"
-DEFAULT_APP_URL = "https://app.skillenai.com"
+DEFAULT_APP_URL = "https://skillenai.com"
 CREDS_DIR = Path.home() / ".skillenai"
 CREDS_PATH = CREDS_DIR / ".env"
 
