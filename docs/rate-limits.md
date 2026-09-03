@@ -26,7 +26,7 @@ X-Credits-Used: 1
 X-Credits-Remaining: 4832
 ```
 
-You can also check your balance and usage in the web dashboard at [app.skillenai.com](https://app.skillenai.com).
+You can also check your balance and usage in the web dashboard at [skillenai.com](https://skillenai.com).
 
 ## Error Codes
 
@@ -49,7 +49,7 @@ Returned when your credit balance reaches zero:
 
 ```json
 {
-  "detail": "Insufficient credits. Purchase additional credits at app.skillenai.com."
+  "detail": "Insufficient credits. Purchase additional credits at skillenai.com."
 }
 ```
 

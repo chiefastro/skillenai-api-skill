@@ -16,7 +16,7 @@ Skillenai indexes and enriches content from across the AI/ML landscape — job p
 
 ## Quick Start
 
-1. **Register** at [app.skillenai.com](https://app.skillenai.com) and verify your email
+1. **Register** at [skillenai.com](https://skillenai.com) and verify your email
 2. **Create an API key** in the dashboard — it will look like `skn_live_...`
 3. **Make your first request:**
 
@@ -57,7 +57,7 @@ The recommended path is the in-skill OAuth flow:
 /skillenai:api setup
 ```
 
-This opens `app.skillenai.com/activate` in your browser, you sign in (or sign up) and click **Allow**, and the issued key is written to `~/.skillenai/.env` with mode 0600. The key is never printed to the terminal or to the conversation transcript — the agent only sees a `✓ Authorized` confirmation.
+This opens the Skillenai activation page in your browser, you sign in (or sign up) and click **Allow**, and the issued key is written to `~/.skillenai/.env` with mode 0600. The key is never printed to the terminal or to the conversation transcript — the agent only sees a `✓ Authorized` confirmation.
 
 Behind the scenes the skill calls the API through `scripts/api.py`, which loads `~/.skillenai/.env` in its own process and signs requests with `X-API-Key`. The agent's shell never sees the key, so it can't be accidentally echoed, logged, or shown in `ps`.
 
@@ -71,7 +71,7 @@ chmod 600 ~/.skillenai/.env
 
 Or export it in your shell profile: `export API_KEY=skn_live_...`. Credentials resolve with the same precedence in every entry point: shell env → `~/.skillenai/.env` → plugin-local `.env` → cwd `.env`.
 
-Get an API key by registering at [app.skillenai.com](https://app.skillenai.com).
+Get an API key by registering at [skillenai.com](https://skillenai.com).
 
 ### Asking questions
 

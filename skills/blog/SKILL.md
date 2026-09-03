@@ -12,14 +12,14 @@ Invoke as `/skillenai:blog` (when installed via `/plugin install skillenai`).
 
 This skill lets the user write, edit, and publish posts on the Skillenai blog through Claude. Drafting, image generation, web research, and citation flow naturally inside the conversation, and the skill posts the result back through the same Skillenai API key already authorised for the data products API.
 
-The dashboard editor at `app.skillenai.com/dashboard/posts` remains the canonical UI for human authors. This skill is a parallel surface for users who prefer to author through Claude.
+The dashboard editor at `skillenai.com/dashboard/posts` remains the canonical UI for human authors. This skill is a parallel surface for users who prefer to author through Claude.
 
 ## Host
 
 The content endpoints live at:
 
 ```
-https://app.skillenai.com/api/backend
+https://skillenai.com/api/backend
 ```
 
 Same host as the alerts surface. Calls go through the shared wrapper with `--host app`. The same `X-API-Key` authenticates both this host and `api.skillenai.com` — one key, two hosts.
@@ -132,7 +132,7 @@ python "$WRAP" POST /content/posts --host app \
 
 201 returns the full `PostDetail`. `status` will be one of:
 
-- `draft` — approved authors. Tell the user the URL is `app.skillenai.com/dashboard/posts/<slug>/edit`. They publish from there or via Flow 5.
+- `draft` — approved authors. Tell the user the URL is `skillenai.com/dashboard/posts/<slug>/edit`. They publish from there or via Flow 5.
 - `pending_review` — first-time or pending authors. Tell the user the post is in the moderation queue and they'll get an email when it's approved.
 
 If the response is 409, the user already has a pending draft (1-active-draft cap) — surface the message and stop.
@@ -258,7 +258,7 @@ User: "Draft a post about why teams underestimate the cost of switching ORMs, wi
 4. On confirm, optionally upload a cover image with Flow 7.
 5. POST to `/content/posts`.
 6. Report:
-   - The post's `slug` and dashboard URL: `https://app.skillenai.com/dashboard/posts/<slug>/edit`
+   - The post's `slug` and dashboard URL: `https://skillenai.com/dashboard/posts/<slug>/edit`
    - If `status == draft`: tell the user they can publish via Flow 5 or the dashboard.
    - If `status == pending_review`: tell the user it's in the moderation queue and they'll get an email when it lands.
 
