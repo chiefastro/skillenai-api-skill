@@ -1,7 +1,7 @@
 {
   "name": "skillenai",
-  "version": "0.7.0",
-  "description": "Skillenai Claude plugin — query the Data Products API, find jobs, and author blog posts using your Skillenai API key",
+  "version": "0.8.0",
+  "description": "Skillenai Claude plugin \u2014 query the Data Products API, find jobs, and author blog posts using your Skillenai API key",
   "author": {
     "name": "Jared Rand",
     "url": "https://github.com/chiefastro"
@@ -9,5 +9,11 @@
   "homepage": "https://github.com/skillenai/skillenai-api-skill",
   "repository": "https://github.com/skillenai/skillenai-api-skill",
   "license": "MIT",
-  "keywords": ["api", "labor-market", "skills", "jobs", "analytics"]
+  "keywords": [
+    "api",
+    "labor-market",
+    "skills",
+    "jobs",
+    "analytics"
+  ]
 }
